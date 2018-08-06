@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en" ng-app="APP">
+<head>
+  <base href="/">
+  <meta charset="utf-8">
+  <title>MyProject</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <app-root></app-root>
+  <body>
+      <form ng-controller="uploader">
+              <input type="file"
+              file-input="files"
+              multiple/>
+              <button ng-click="upload()" class="btn btn-success">upload</button>
+              <li ng-repeat="file in files">{{file.name}}</li>
+          </form>
+          <!--link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"-->
+          <script src="http://code.angularjs.org/1.2.2/angular.min.js"></script>
+          <script>
+          angular.module('APP',[]).
+          directive('fileInput',['$parse',function($parse){
+                  return{
+                          restrict:'A',
+                          link:function($scope,$elm,attrs)
+                          {
+                                  elm.bind('change',function(){
+                                          $parse(attrs.fileInput)
+                                          .assign(scope,elm[0].files)
+                                          $scope.$apply()
+                                  })
+                          }
+                  }
+          }])
+          controller('uploader',['$scope','$http',
+          function($scope,$http)
+          {
+            $scope.fileChanged =function(elm)
+            {
+              $scope.files=elm.files
+              $scope.$apply();
+            }
+            $scope.upload=function()
+            {
+              var fd =new FormData()
+              angular.foreach($scope.files,function(file){
+                  fd.append('file',file)
+              })  
+              $http.post('upload.ashx',$fd,
+                {
+                  transformRequest:angular.identity,
+                    headers:{'Content-Type':'undefined'}
+                })
+                .success(function(d){
+                    console.log(d);
+        
+                })
+            }
+          }
+          ])
+          import { HttpClient,HttpParams } from '@angular/common/http';
+
+          params = new HttpParams()
+    .set('page', '2')
+    .Append('page', '3')
+    .set('sort', 'name');
+ 
+console.log(params.toString()); //Returns page=2&page=3&sort=name
+ 
+             </script>
+</body>
+</html>
